@@ -10,7 +10,7 @@ from PIL import Image
 from keras.models import model_from_json
 
 
-data_path = '/Users/admin/Documents/SketchToCode'
+data_path = ''
 
 
 

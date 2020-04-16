@@ -7,8 +7,8 @@ Created on Mon Jan 20 15:33:20 2020
 
 import os
 import numpy as np
-from PIL import Image
-from keras.preprocessing.text import Tokenizer
+import tensorflow as tf
+from keras.preprocessing import Tokenizer
 from keras.layers import Conv2D,Dense,Dropout,Flatten,GRU,Embedding,concatenate,RepeatVector
 from keras.models import Model,Input
 from keras import Sequential
@@ -20,7 +20,7 @@ from keras.utils import to_categorical
 #import cv2
 
 
-data_path = '/Users/trycatch/Documents/SketchToCode/all_data'
+data_path = ""
 
 data = os.listdir(data_path)
 y=[]
