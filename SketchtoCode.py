@@ -8,19 +8,20 @@ Created on Mon Jan 20 15:33:20 2020
 import os
 import numpy as np
 import tensorflow as tf
-from keras.preprocessing import Tokenizer
+from keras.preprocessing.text import Tokenizer
 from keras.layers import Conv2D,Dense,Dropout,Flatten,GRU,Embedding,concatenate,RepeatVector
 from keras.models import Model,Input
 from keras import Sequential
 from keras.optimizers import RMSprop
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
+from PIL import Image
 
 
 #import cv2
 
 
-data_path = ""
+data_path = "data/"
 
 data = os.listdir(data_path)
 y=[]
