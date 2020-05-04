@@ -10,14 +10,14 @@ from keras.preprocessing.text import Tokenizer, one_hot
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
 
-from .imagedataprocessing import *
+import imagedataprocessing
 
 VOCAB_FILE              = '../vocabulary.vocab'
 TRAINING_SET_NAME       = "training_set"
 VALIDATION_SET_NAME     = "validation_set"
 BATCH_SIZE              = 64
 
-class Dataset:
+class dataprocessor:
 
     def __init__(self, data_input_folder, test_set_folder=None):
         self.data_input_folder = data_input_folder
@@ -39,9 +39,9 @@ class Dataset:
         return training_path, validation_path
 
     def preprocess_data(self, training_path, validation_path, augment_training_data):
-        train_img_preprocessor = ImagePreprocessor()
+        train_img_preprocessor = imagedataprocessing()
         train_img_preprocessor.build_image_dataset(training_path, augment_data=augment_training_data)
-        val_img_preprocessor = ImagePreprocessor()
+        val_img_preprocessor = imagedataprocessing()
         val_img_preprocessor.build_image_dataset(validation_path, augment_data=0)
 
 
@@ -63,12 +63,12 @@ class Dataset:
 
     @classmethod
     def create_generator(cls, data_input_path, max_sequences):
-        img_features, text_features = Dataset.load_data(data_input_path)
+        img_features, text_features = dataprocessor.load_data(data_input_path)
         total_sequences = 0
         for text_set in text_features: total_sequences += len(text_set.split())
         steps_per_epoch = total_sequences // BATCH_SIZE
-        tokenizer, vocab_size = Dataset.load_vocab()
-        data_gen = Dataset.data_generator(text_features, img_features, max_sequences, tokenizer, vocab_size)
+        tokenizer, vocab_size = dataprocessor.load_vocab()
+        data_gen = dataprocessor.data_generator(text_features, img_features, max_sequences, tokenizer, vocab_size)
         return data_gen, steps_per_epoch
 
     @classmethod
@@ -79,7 +79,7 @@ class Dataset:
                 for j in range(i, min(len(text_features), i+1)):
                     image = img_features[j]
                     desc = text_features[j]
-                    in_img, in_seq, out_word = Dataset.process_data_for_generator([desc], [image], max_sequences, tokenizer, vocab_size)
+                    in_img, in_seq, out_word = dataprocessor.process_data_for_generator([desc], [image], max_sequences, tokenizer, vocab_size)
                     for k in range(len(in_img)):
                         Ximages.append(in_img[k])
                         XSeq.append(in_seq[k])
