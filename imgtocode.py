@@ -13,16 +13,15 @@ from keras.preprocessing.sequence import pad_sequences
 
 
 def resize_img(png_file_path):
-        img_rgb = cv2.imread(png_file_path)
-        img_grey = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
-        img_adapted = cv2.adaptiveThreshold(img_grey, 255, cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY, 101, 9)
-        img_stacked = np.repeat(img_adapted[...,None],3,axis=2)
-        resized = cv2.resize(img_stacked, (224,224), interpolation=cv2.INTER_AREA)
-        bg_img = 255 * np.ones(shape=(224,224,3))
-        bg_img[0:224, 0:224,:] = resized
-        bg_img /= 255
-        bg_img = np.rollaxis(bg_img, 2, 0)  
-        return bg_img
+    img_rgb = cv2.imread(png_file_path)
+    img_grey = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
+    img_adapted = cv2.adaptiveThreshold(img_grey, 255, cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY, 101, 9)
+    img_stacked = np.repeat(img_adapted[...,None],3,axis=2)
+    resized = cv2.resize(img_stacked, (200,200), interpolation=cv2.INTER_AREA)
+    bg_img = 255 * np.ones(shape=(256,256,3))
+    bg_img[27:227, 27:227,:] = resized
+    bg_img /= 255
+    return bg_img
     
 def load_doc(filename):
     file = open(filename, 'r')
@@ -30,6 +29,67 @@ def load_doc(filename):
     file.close()
     return text
 
+def process_data_for_generator(texts, features, max_sequences, tokenizer, vocab_size):
+    X, y, image_data = list(), list(), list()
+    sequences = tokenizer.texts_to_sequences(texts)
+    for img_no, seq in enumerate(sequences):
+        for i in range(1, len(seq)):
+            in_seq, out_seq = seq[:i], seq[i]
+            in_seq = pad_sequences([in_seq], maxlen=max_sequences)[0]
+            out_seq = to_categorical([out_seq], num_classes=vocab_size)[0]
+            image_data.append(features[img_no])
+            X.append(in_seq[-48:])
+            y.append(out_seq)
+    return np.array(image_data), np.array(X), np.array(y)
+
+def load_directory(data_dir):
+    all_filenames = listdir(data_dir)
+    all_filenames.sort()
+    image_filenames,texts = list(),list()
+    for filename in (all_filenames):
+        if filename[-3:] == "png":
+            image_filenames.append(filename)
+        else:
+            text = '<START> ' + load_doc(data_dir+filename) + ' <END>'
+            text = ' '.join(text.split())
+            text = text.replace(',', ' ,')
+            texts.append(text)
+    return image_filenames,texts
+
+def load_tokenizer(texts):
+    tokenizer = Tokenizer(filters='', split=" ", lower=False)
+    
+    tokenizer.fit_on_texts([load_doc('C:/Users/Yogesh Upadhyay/Documents/MachineLearningProjects/SketchToCode/vocabulary.vocab')])
+   
+    vocab_size = len(tokenizer.word_index) + 1
+
+    train_sequences = tokenizer.texts_to_sequences(texts)
+
+    max_sequence = max(len(s) for s in train_sequences)
+
+    return tokenizer,vocab_size,train_sequences,max_sequence
+
+def load_images(image_filenames,data_dir):
+    images = list()
+    for image in image_filenames:
+        images.append(resize_img(data_dir+image))
+    return images
+
+def data_generator(text_features, img_features, max_sequences, tokenizer, vocab_size):
+    while 1:
+        for i in range(0, len(text_features), 1):
+            Ximages, XSeq, y = list(), list(),list()
+            for j in range(i, min(len(text_features), i+1)):
+                image = img_features[j]
+                desc = text_features[j]
+                in_img, in_seq, out_word = process_data_for_generator([desc], [image], max_sequences, tokenizer, vocab_size)
+                for k in range(len(in_img)):
+                    Ximages.append(in_img[k])
+                    XSeq.append(in_seq[k])
+                    y.append(out_word[k])
+            yield [[np.array(Ximages), np.array(XSeq)], np.array(y)]
+
+"""        
 class Dataset():
     def __init__(self, data_dir, input_transform=None, target_transform=None):
         self.data_dir = data_dir
@@ -61,32 +121,33 @@ class Dataset():
         self.max_sequence = max(len(s) for s in self.train_sequences)
         # Specify how many tokens to have in each input sentence
         self.max_length = 48
-        
-        X, y, image_data_filenames = list(), list(), list()
-        for img_no, seq in enumerate(self.train_sequences):
-            in_seq, out_seq = seq[:-1], seq[1:]
-            out_seq = to_categorical(out_seq, num_classes=self.vocab_size)
-            image_data_filenames.append(self.image_filenames[img_no])
-            X.append(in_seq)
-            y.append(out_seq)
-                
-        self.X = X
-        self.y = y
-        self.image_data_filenames = image_data_filenames
-        self.images = list()
-        for image_name in self.image_data_filenames:
-            image = resize_img(self.data_dir+image_name)
-            self.images.append(image)
+        images = list()
+        vocab_size = len(tokenizer.word_index) + 1
 
+        for image in self.image_filenames:
+            images.append(resize_img(data_dir+image))
+
+        Ximages, XSeq, y = list(), list(),list()
+        for i in range(0, len(self.texts), 1):
+            for j in range(i, min(len(self.texts), i+1)):
+                image = images[j]
+                desc = self.texts[j]
+                in_img, in_seq, out_word = process_data_for_generator([desc], [image], 48, self.tokenizer, vocab_size)
+                for k in range(len(in_img)):
+                    Ximages.append(in_img[k])
+                    XSeq.append(in_seq[k])
+                    y.append(out_word[k])
+"""
 dir_name = 'C:/Users/Yogesh Upadhyay/Documents/MachineLearningProjects/SketchToCode/data/'
-batch_size = 32
-my_dateset = Dataset(dir_name)
+#batch_size = 32
 
+image_filenames,texts = load_directory(dir_name)
+tokenizer,vocab_size,train_sequences,max_sequence= load_tokenizer(texts)
+images = load_images(image_filenames,dir_name)
 
-vocab_size = my_dateset.vocab_size
-
-generator = [[np.array(my_dateset.images) , np.array(my_dateset.X)], my_dateset.y]
-
+print(images.shape)
+print(texts.shape)
+data_gen = data_generator(texts, images, max_sequence, tokenizer, vocab_size)
 
 #Model 
 
