@@ -94,8 +94,11 @@ print(images.shape)
 
 data_gen = data_generator(texts, images, 150, tokenizer, vocab_size)
 total_sequences = 0
-for text_set in texts: total_sequences += len(text_set.split())
+for text_set in texts: 
+    total_sequences += len(text_set.split())
+print(total_sequences)
 steps_per_epoch = total_sequences // batch_size
+print(steps_per_epoch)
 
 #Model 
 
