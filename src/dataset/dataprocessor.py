@@ -10,7 +10,7 @@ from keras.preprocessing.text import Tokenizer, one_hot
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
 
-import imagedataprocessing
+from imagedataprocessing import *
 
 VOCAB_FILE              = '../vocabulary.vocab'
 TRAINING_SET_NAME       = "training_set"

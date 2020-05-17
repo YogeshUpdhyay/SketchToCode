@@ -11,6 +11,19 @@ from keras import Sequential
 from keras.optimizers import RMSprop
 from keras.preprocessing.sequence import pad_sequences
 
+def load_directory(data_dir):
+    all_filenames = listdir(data_dir)
+    all_filenames.sort()
+    image_filenames,texts = list(),list()
+    for filename in (all_filenames):
+        if filename[-3:] == "png":
+            image_filenames.append(filename)
+        else:
+            text = '<START> ' + load_doc(data_dir+filename) + ' <END>'
+            text = ' '.join(text.split())
+            text = text.replace(',', ' ,')
+            texts.append(text)
+    return image_filenames,texts
 
 def resize_img(png_file_path):
     img_rgb = cv2.imread(png_file_path)
@@ -29,6 +42,18 @@ def load_doc(filename):
     file.close()
     return text
 
+def load_tokenizer(texts):
+    tokenizer = Tokenizer(filters='', split=" ", lower=False)
+    tokenizer.fit_on_texts([load_doc('C:/Users/Yogesh Upadhyay/Documents/MachineLearningProjects/SketchToCode/vocabulary.vocab')])
+    vocab_size = len(tokenizer.word_index) + 1
+    return tokenizer,vocab_size
+
+def load_images(image_filenames,data_dir):
+    images = list()
+    for image in image_filenames:
+        images.append(resize_img(data_dir+image))
+    return np.array(images)
+
 def process_data_for_generator(texts, features, max_sequences, tokenizer, vocab_size):
     X, y, image_data = list(), list(), list()
     sequences = tokenizer.texts_to_sequences(texts)
@@ -42,38 +67,6 @@ def process_data_for_generator(texts, features, max_sequences, tokenizer, vocab_
             y.append(out_seq)
     return np.array(image_data), np.array(X), np.array(y)
 
-def load_directory(data_dir):
-    all_filenames = listdir(data_dir)
-    all_filenames.sort()
-    image_filenames,texts = list(),list()
-    for filename in (all_filenames):
-        if filename[-3:] == "png":
-            image_filenames.append(filename)
-        else:
-            text = '<START> ' + load_doc(data_dir+filename) + ' <END>'
-            text = ' '.join(text.split())
-            text = text.replace(',', ' ,')
-            texts.append(text)
-    return image_filenames,texts
-
-def load_tokenizer(texts):
-    tokenizer = Tokenizer(filters='', split=" ", lower=False)
-    
-    tokenizer.fit_on_texts([load_doc('C:/Users/Yogesh Upadhyay/Documents/MachineLearningProjects/SketchToCode/vocabulary.vocab')])
-   
-    vocab_size = len(tokenizer.word_index) + 1
-
-    train_sequences = tokenizer.texts_to_sequences(texts)
-
-    max_sequence = max(len(s) for s in train_sequences)
-
-    return tokenizer,vocab_size,train_sequences,max_sequence
-
-def load_images(image_filenames,data_dir):
-    images = list()
-    for image in image_filenames:
-        images.append(resize_img(data_dir+image))
-    return images
 
 def data_generator(text_features, img_features, max_sequences, tokenizer, vocab_size):
     while 1:
@@ -89,65 +82,20 @@ def data_generator(text_features, img_features, max_sequences, tokenizer, vocab_
                     y.append(out_word[k])
             yield [[np.array(Ximages), np.array(XSeq)], np.array(y)]
 
-"""        
-class Dataset():
-    def __init__(self, data_dir, input_transform=None, target_transform=None):
-        self.data_dir = data_dir
-        self.image_filenames = []
-        self.texts = []
-        all_filenames = listdir(data_dir)
-        all_filenames.sort()
-        for filename in (all_filenames):
-            if filename[-3:] == "png":
-                self.image_filenames.append(filename)
-            else:
-                text = '<START> ' + load_doc(self.data_dir+filename) + ' <END>'
-                text = ' '.join(text.split())
-                text = text.replace(',', ' ,')
-                self.texts.append(text)
-        self.input_transform = input_transform
-        self.target_transform = target_transform
-        
-        # Initialize the function to create the vocabulary 
-        tokenizer = Tokenizer(filters='', split=" ", lower=False)
-        # Create the vocabulary 
-        tokenizer.fit_on_texts([load_doc('C:/Users/Yogesh Upadhyay/Documents/MachineLearningProjects/SketchToCode/vocabulary.vocab')])
-        self.tokenizer = tokenizer
-        # Add one spot for the empty word in the vocabulary 
-        self.vocab_size = len(tokenizer.word_index) + 1
-        # Map the input sentences into the vocabulary indexes
-        self.train_sequences = tokenizer.texts_to_sequences(self.texts)
-        # The longest set of boostrap tokens
-        self.max_sequence = max(len(s) for s in self.train_sequences)
-        # Specify how many tokens to have in each input sentence
-        self.max_length = 48
-        images = list()
-        vocab_size = len(tokenizer.word_index) + 1
-
-        for image in self.image_filenames:
-            images.append(resize_img(data_dir+image))
-
-        Ximages, XSeq, y = list(), list(),list()
-        for i in range(0, len(self.texts), 1):
-            for j in range(i, min(len(self.texts), i+1)):
-                image = images[j]
-                desc = self.texts[j]
-                in_img, in_seq, out_word = process_data_for_generator([desc], [image], 48, self.tokenizer, vocab_size)
-                for k in range(len(in_img)):
-                    Ximages.append(in_img[k])
-                    XSeq.append(in_seq[k])
-                    y.append(out_word[k])
-"""
 dir_name = 'C:/Users/Yogesh Upadhyay/Documents/MachineLearningProjects/SketchToCode/data/'
-#batch_size = 32
+img = '1A4A0B67-2481-49AF-9E74-1AAC30F88AF4.png'
+batch_size = 32
 
 image_filenames,texts = load_directory(dir_name)
-tokenizer,vocab_size,train_sequences,max_sequence= load_tokenizer(texts)
+tokenizer,vocab_size= load_tokenizer(texts)
 images = load_images(image_filenames,dir_name)
 
 print(images.shape)
-print(texts.shape)
-data_gen = data_generator(texts, images, max_sequence, tokenizer, vocab_size)
+
+data_gen = data_generator(texts, images, 150, tokenizer, vocab_size)
+total_sequences = 0
+for text_set in texts: total_sequences += len(text_set.split())
+steps_per_epoch = total_sequences // batch_size
 
 #Model 
 
@@ -191,5 +139,32 @@ model.summary()
 
 
 
-model.fit_generator(generator = generator,epochs=2,steps_per_epoch=10 )
+model.fit_generator(generator = data_gen,epochs = 10,steps_per_epoch = steps_per_epoch)
+
+
+img_features = np.array([resize_img(dir_name+img)])
+in_text = '<START> '
+
+def word_for_id(integer):
+    for word, index in tokenizer.word_index.items():
+        if index == integer:
+            return word
+    return None
+
+for i in range(150):
+    sequence = tokenizer.texts_to_sequences([in_text])[0]
+    sequence = pad_sequences([sequence], maxlen=48)
+    yhat = model.predict([img_features, sequence], verbose=0)
+    yhat = np.argmax(yhat)
+    word = word_for_id(yhat)
+    if word is None:
+        break
+    in_text += word + ' '
+    if word == '<END>':
+        break
+
+generated_gui = in_text.split()
+
+
+print(generated_gui)
 
