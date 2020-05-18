@@ -142,7 +142,7 @@ model.summary()
 
 
 
-model.fit_generator(generator = data_gen,epochs = 10,steps_per_epoch = steps_per_epoch)
+model.fit_generator(generator = data_gen,epochs = 1,steps_per_epoch = steps_per_epoch/2)
 
 
 img_features = np.array([resize_img(dir_name+img)])

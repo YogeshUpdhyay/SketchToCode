@@ -10,7 +10,7 @@ from keras.preprocessing.text import Tokenizer, one_hot
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
 
-from imagedataprocessing import *
+from dataset.imagedataprocessing import *
 
 VOCAB_FILE              = '../vocabulary.vocab'
 TRAINING_SET_NAME       = "training_set"
@@ -39,7 +39,7 @@ class dataprocessor:
         return training_path, validation_path
 
     def preprocess_data(self, training_path, validation_path, augment_training_data):
-        train_img_preprocessor = imagedataprocessing()
+        train_img_preprocessor = dataset.imagedataprocessing()
         train_img_preprocessor.build_image_dataset(training_path, augment_data=augment_training_data)
         val_img_preprocessor = imagedataprocessing()
         val_img_preprocessor.build_image_dataset(validation_path, augment_data=0)
