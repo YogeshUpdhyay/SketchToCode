@@ -13,16 +13,17 @@ class imageprocessor():
         pass
 
   
-    def processing_images(self, all_filenames , augmentation = True):
+    def processing_images(self, all_filenames ,data_path, augmentation = True,):
         print("Converting images to array and augmentation")
-        resized_images , labels = self.get_images_labels(all_filenames)
+        resized_images = self.get_images(all_filenames,data_path)
 
         if augmentation == True:
             images = self.get_augment_images(resized_images)
         else:
-            self.save_images(resized_images,labels)
+            self.save_images(resized_images)
         
-        return resized_images, labels
+        return images
+
 
     def get_augment_images(self,resized_images):
         generator = ImageDataGenerator(rotation_range=2,
@@ -50,13 +51,14 @@ class imageprocessor():
         bg_img /= 255
         return bg_img
 
-    def get_images_labels(self,all_filenames):
+
+    def get_images(self,all_filenames,data_path):
         resized_images =list()
         for i in all_filenames:
-            img = self.resize_img(i)
+            img = self.resize_img(data_path+i)
             resized_images.append(img)
+        return np.array(resized_images)
 
 
-#data_path = 'C:/Users/Yogesh Upadhyay/Documents/MachineLearningProjects/SketchToCode/data/1A4A0B67-2481-49AF-9E74-1AAC30F88AF4.png'
 
 

@@ -5,8 +5,8 @@ from keras.layers import Embedding, GRU, TimeDistributed, RepeatVector, LSTM, co
 from keras.layers.convolutional import Conv2D
 from keras.optimizers import RMSprop
 
-import ModelUtils
-import dataprocessor
+from .ModelUtils import *
+from ..dataset.dataprocessor import *
 
 MAX_LENGTH = 48
 MAX_SEQ    = 150
