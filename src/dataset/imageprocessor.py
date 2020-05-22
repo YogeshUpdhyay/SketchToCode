@@ -1,7 +1,7 @@
 import os
 import cv2
 import numpy as np 
-import numba
+import matplotlib.pyplot as pyplot
 
 
 from keras.preprocessing.image import ImageDataGenerator
@@ -14,30 +14,9 @@ class imageprocessor():
 
   
     def processing_images(self, all_filenames ,data_path, augmentation = True,):
-        print("Converting images to array and augmentation")
+        print("Converting images to array ")
         resized_images = self.get_images(all_filenames,data_path)
-
-        if augmentation == True:
-            images = self.get_augment_images(resized_images)
-        else:
-            self.save_images(resized_images)
-        
-        return images
-
-
-    def get_augment_images(self,resized_images):
-        generator = ImageDataGenerator(rotation_range=2,
-                                 width_shift_range=0.05,
-                                 height_shift_range=0.05,
-                                 zoom_range=0.05
-                                )
-        keras_generator = generator.flow(resized_images,batch_size=1)
-        images = list()
-        for i in  range(0,len(resized_images)):
-            image = next(keras_generator)
-            images.append(image)
-        
-        return images
+        return resized_images
     
 
     def resize_img(self,png_file_path):

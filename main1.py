@@ -13,8 +13,8 @@ tokenizer,vocab_size = data_generator.load_vocab(vocab_path)
 
 sketch_to_code = sketch_to_code(vocab_size)
 model = sketch_to_code.create_model()
+batch_size = 64
 
-
-
+model.fit_generator(generator = data_gen,steps_per_epoch = steps_per_epoch/batch_size,epochs=1)
 
 

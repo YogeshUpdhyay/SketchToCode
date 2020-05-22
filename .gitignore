@@ -2,3 +2,6 @@ data/
 weights/
 research/
 weights.h5
+src/__pycache__/
+src/dataset/__pycache__/
+src/model/__pycache__/
