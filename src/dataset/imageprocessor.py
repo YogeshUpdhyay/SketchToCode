@@ -38,6 +38,10 @@ class imageprocessor():
             resized_images.append(img)
         return np.array(resized_images)
 
+    def get_image_features(self,png_file_path):
+        features = self.resize_img(png_file_path)
+        assert(features.shape == (256,256,3))
+        return features
 
 
 

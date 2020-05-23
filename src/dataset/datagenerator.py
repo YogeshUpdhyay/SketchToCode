@@ -7,27 +7,39 @@ import numpy as np
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
+from sklearn.model_selection import train_test_split
 
 from .imageprocessor import *
 
+BATCH_SIZE              = 64
+
+
 class datagenerator():
-    def __init__(self,data_input_folder):
+    def __init__(self,data_input_folder,vocab_path):
         self.data_input_folder = data_input_folder
+        self.vocab_path = vocab_path
+
+    def split_datasets(self,texts,images,validation_split):
+        train_texts,val_texts,train_imgaes,val_images = train_test_split(texts,images,test_size = validation_split)
+
+        return train_texts,train_imgaes,val_texts,val_images
+
     
 
-    def load_vocab(self,vocab_path):
-        file = open(vocab_path,'r')
+    def load_vocab(self):
+        file = open(self.vocab_path,'r')
         text = file.read().splitlines()[0]
         file.close()
         tokenizer = Tokenizer(filters='', split=" ", lower=False)
         tokenizer.fit_on_texts([text])
         vocab_size = len(tokenizer.word_index) + 1
         self.vocab_size = vocab_size
+
         return tokenizer,vocab_size
 
 
-    def load_data(self,data_input_folder):
-        all_files = os.listdir(data_input_folder)
+    def load_data(self):
+        all_files = os.listdir(self.data_input_folder)
         guis , image_files = list(),list()
         for i in all_files:
             if(i.endswith('png')):
@@ -43,18 +55,32 @@ class datagenerator():
         
         return image_files,guis
 
-
-    def create_generator(self,data_input_folder,max_sequence,vocab_path):
-        image_files , texts = self.load_data(data_input_folder)
+    def get_steps_per_epoch(self,texts):
         total_sequences = 0
         for i in texts:
             total_sequences += len(i.split())
         steps_per_epoch = total_sequences
-        tokenizer ,vocab_size = self.load_vocab(vocab_path)
+
+        return steps_per_epoch//BATCH_SIZE
+
+
+    def create_generator(self,max_sequence,validation_split):
+        image_files , texts = self.load_data()
+
+        tokenizer ,vocab_size = self.load_vocab()
+
         image_processor = imageprocessor()
-        images = image_processor.processing_images(image_files,data_input_folder)
-        data_gen = self.data_generator(texts, image_files, max_sequence, tokenizer, vocab_size)
-        return steps_per_epoch,data_gen
+        images = image_processor.processing_images(image_files,self.data_input_folder)
+
+        train_texts,train_imgaes,val_texts,val_images = self.split_datasets(texts,images)
+
+        train_generator = self.data_generator(train_texts, train_imgaes, max_sequence, tokenizer, vocab_size)
+        val_generator   = self.data_generator(val_texts,val_images,max_sequence,tokenizer,vocab_size)
+
+        train_steps_per_epoch = self.get_steps_per_epoch(train_texts)
+        val_steps_per_epoch   = self.get_steps_per_epoch(val_texts)
+
+        return train_steps_per_epoch,train_generator,val_steps_per_epoch,val_generator
 
 
     def data_generator(self, text_features, img_features, max_sequences, tokenizer, vocab_size):
