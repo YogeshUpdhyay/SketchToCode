@@ -40,12 +40,13 @@ def main():
     model_output_path = options.model_output_path
     model_json_file = options.model_json_file
     model_weights_file = options.model_weights_file
+    vocab_path = options.vocab_path
 
     if not os.path.exists(model_output_path):
         os.makedirs(model_output_path)
 
 
-    sketchtocode = sketch_to_code(model_output_path,data_input_path)
+    sketchtocode = sketch_to_code(model_output_path,data_input_path,vocab_path)
 
 
     if model_json_file is not None and model_weights_file is not None:

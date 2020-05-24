@@ -5,3 +5,4 @@ weights.h5
 src/__pycache__/
 src/dataset/__pycache__/
 src/model/__pycache__/
+model_output/

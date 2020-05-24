@@ -13,15 +13,16 @@ MAX_SEQUENCE = 150
 
 class sketch_to_code():
 
-    def __init__(self,model_output_path,data_input_path):
+    def __init__(self,model_output_path,data_input_path,vocab_path):
         self.model_output_path = model_output_path
         self.data_input_path = data_input_path
+        self.vocab_path = vocab_path
         pass 
 
     def create_model(self):
 
-        data_generator = datagenerator(self.data_input_path)
-        tokenizer , vocab_size = data_generator.load_vocab()
+        self.data_generator = datagenerator(self.data_input_path,self.vocab_path)
+        tokenizer , vocab_size = self.data_generator.load_vocab()
         self.vocab_size = vocab_size
 
         image_model = Sequential()
@@ -92,9 +93,7 @@ class sketch_to_code():
 
     def train(self,model,data_input_path,validation_split,epochs):
 
-        data_generator = datagenerator(data_input_path)
-
-        train_steps_per_epoch,train_generator,val_steps_per_epoch,val_generator = data_generator.create_generator(MAX_SEQUENCE,validation_split)
+        train_steps_per_epoch,train_generator,val_steps_per_epoch,val_generator = self.data_generator.create_generator(MAX_SEQUENCE,validation_split)
 
         print("Training started")
         model.fit_generator(generator=train_generator, validation_data=val_generator, epochs=epochs, shuffle=False, validation_steps=val_steps_per_epoch,steps_per_epoch=train_steps_per_epoch)

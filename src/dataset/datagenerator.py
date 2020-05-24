@@ -45,7 +45,7 @@ class datagenerator():
             if(i.endswith('png')):
                 image_files.append(i)
             else:
-                file = open(data_input_folder+i,'r')
+                file = open(self.data_input_folder+i,'r')
                 texts = file.read()
                 file.close()
                 i = '<START> ' + texts + ' <END>'
@@ -72,7 +72,7 @@ class datagenerator():
         image_processor = imageprocessor()
         images = image_processor.processing_images(image_files,self.data_input_folder)
 
-        train_texts,train_imgaes,val_texts,val_images = self.split_datasets(texts,images)
+        train_texts,train_imgaes,val_texts,val_images = self.split_datasets(texts,images,validation_split)
 
         train_generator = self.data_generator(train_texts, train_imgaes, max_sequence, tokenizer, vocab_size)
         val_generator   = self.data_generator(val_texts,val_images,max_sequence,tokenizer,vocab_size)
