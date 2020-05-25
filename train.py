@@ -22,12 +22,6 @@ def build_parser():
     parser.add_argument('--model_output_path', type=str,
                         dest='model_output_path', help='directory for saving model data',
                         required=True)
-    parser.add_argument('--model_json_file', type=str,
-                        dest='model_json_file', help='pretrained model json file',
-                        required=False)
-    parser.add_argument('--model_weights_file', type=str,
-                        dest='model_weights_file', help='pretrained model weights file',
-                        required=False)
     return parser
 
 
@@ -38,8 +32,6 @@ def main():
     validation_split = options.validation_split
     epochs = options.epochs
     model_output_path = options.model_output_path
-    model_json_file = options.model_json_file
-    model_weights_file = options.model_weights_file
     vocab_path = options.vocab_path
 
     if not os.path.exists(model_output_path):
@@ -47,15 +39,9 @@ def main():
 
 
     sketchtocode = sketch_to_code(model_output_path,data_input_path,vocab_path)
+    model = sketchtocode.create_model()
 
-
-    if model_json_file is not None and model_weights_file is not None:
-        model = sketchtocode.load_model(model_json_file, model_weights_file)
-        print("Loaded pretrained model from disk")
-
-    else:
-        model = sketchtocode.create_model()
-        print("Created new model")
+    print("Created new model")
 
     sketchtocode.train(model,data_input_path,validation_split,epochs)
 

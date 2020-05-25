@@ -62,17 +62,6 @@ class sketch_to_code():
         model.summary()
 
         return model
-
-    def load_model(self):
-        json_file = open('model_json.json', 'r')
-        loaded_model_json = json_file.read()
-        json_file.close()
-        loaded_model = model_from_json(loaded_model_json)
-        loaded_model.load_weights('weights.h5')
-        loaded_model.compile(loss='binary_crossentropy', optimizer='rmsprop')
-        loaded_model.summary()
-
-        return loaded_model
     
     def save_model(self,model):
         model_json = model.to_json()
@@ -80,16 +69,6 @@ class sketch_to_code():
             json_file.write(model_json)
         model.save_weights("{}/weights.h5".format(self.model_output_path))
 
-    def load_model(self, model_json_file, model_weights_file):
-        json_file = open(model_json_file, 'r')
-        loaded_model_json = json_file.read()
-        json_file.close()
-        loaded_model = model_from_json(loaded_model_json)
-        loaded_model.load_weights(model_weights_file)
-        optimizer = RMSprop(lr=0.0001, clipvalue=1.0)
-        loaded_model.compile(loss = 'categorical_crossentropy' , optimizer=optimizer )
-        
-        return loaded_model
 
     def train(self,model,data_input_path,validation_split,epochs):
 

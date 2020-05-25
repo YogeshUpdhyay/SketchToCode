@@ -3,7 +3,8 @@ import os
 from argparse import ArgumentParser
 from os.path import basename
 
-from classes.inference.Sampler import *
+from .inference.Convertor import *
+from .model.load_pretrained_model import *
 
 def build_parser():
   parser = ArgumentParser()
@@ -20,15 +21,8 @@ def build_parser():
                       dest='model_weights_file', help='trained model weights file', required=True)
   parser.add_argument('--style', type=str,
                       dest='style', help='style to use for generation', default='default')
-  parser.add_argument('--print_generated_output', type=int,
-                      dest='print_generated_output', help='see generated GUI output in terminal', default=1)
-  parser.add_argument('--print_bleu_score', type=int,
-                      dest='print_bleu_score', help='see BLEU score for single example', default=0)
-  parser.add_argument('--original_gui_filepath', type=str,
-                      dest='original_gui_filepath', help='if getting BLEU score, provide original gui filepath', default=None)
-
   return parser
-
+  
 def main():
     parser = build_parser()
     options = parser.parse_args()
@@ -43,10 +37,13 @@ def main():
 
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
+    
+    load_pretrainedd_model = load_pretrainedd_model()
+    model = load_pretrainedd_model(model_json_file, model_weights_file)
 
-    sampler = Sampler(model_json_path=model_json_file,
-                      model_weights_path = model_weights_file)
-    sampler.convert_single_image(output_folder, png_path=png_path, print_generated_output=print_generated_output, get_sentence_bleu=print_bleu_score, original_gui_filepath=original_gui_filepath, style=style)
+    convertor = Convertor()
+    convertor.convert_single_image(png_path,model,output_folder, style=style)
+    print("Converted sucessfully")
 
 if __name__ == "__main__":
   main()

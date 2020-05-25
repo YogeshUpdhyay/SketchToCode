@@ -110,13 +110,3 @@ class datagenerator():
                 X.append(in_seq[-48:])
                 y.append(out_seq)
         return np.array(image_data), np.array(X), np.array(y)
-
-
-"""
-data_path = 'C:/Users/Yogesh Upadhyay/Documents/MachineLearningProjects/SketchToCode/data/'
-vocab_path = 'C:/Users/Yogesh Upadhyay/Documents/MachineLearningProjects/SketchToCode/vocabulary.vocab'
-MAX_SEQ = 150
-
-
-steps_per_epoch,data_gen = datagenerator.create_generator(data_path,MAX_SEQ,vocab_path)
-"""

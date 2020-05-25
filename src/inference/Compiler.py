@@ -1,7 +1,7 @@
 import os
 import json
 
-from Node import *
+from .Node import *
 
 BASE_DIR_NAME = os.path.dirname(__file__)
 DEFAULT_DSL_MAPPING_FILEPATH = "airbnb_dsl_mapping.json"
