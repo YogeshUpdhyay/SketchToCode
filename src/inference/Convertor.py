@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 
 import os
 import shutil
@@ -11,8 +12,13 @@ from ..dataset.imageprocessor import *
 from ..dataset.datagenerator import *
 from .Compiler import *
 
-VOCAB_PATH = "../vocabulary.vocab"
-class Convertor():
+
+VOCAB_PATH = "../vocabulary.voacb"
+
+class convertor:
+
+    def __init__(self):
+        pass
 
 
     def load_vocab(self):
@@ -34,8 +40,8 @@ class Convertor():
         sample_id = png_filename[:png_filename.find('.png')]
 
 
-        imageprocessor = imageprocessor()
-        img_features = np.array([imageprocessor.get_image_features(png_path)])
+        image_processor = imageprocessor()
+        img_features = np.array([image_processor.get_image_features(png_path)])
 
         tokenizer,vocab_size = self.load_vocab()
 

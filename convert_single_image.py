@@ -3,8 +3,8 @@ import os
 from argparse import ArgumentParser
 from os.path import basename
 
-from .inference.Convertor import *
-from .model.load_pretrained_model import *
+from src.inference.convertor import *
+from src.model.load_pretrained_model import *
 
 def build_parser():
   parser = ArgumentParser()
@@ -31,18 +31,15 @@ def main():
     model_json_file = options.model_json_file
     model_weights_file = options.model_weights_file
     style = options.style
-    print_generated_output = options.print_generated_output
-    print_bleu_score = options.print_bleu_score
-    original_gui_filepath = options.original_gui_filepath
 
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
     
-    load_pretrainedd_model = load_pretrainedd_model()
-    model = load_pretrainedd_model(model_json_file, model_weights_file)
+    load_model = load_pretrained_model()
+    model = load_model.load_model(model_json_file, model_weights_file)
 
-    convertor = Convertor()
-    convertor.convert_single_image(png_path,model,output_folder, style=style)
+    convert = convertor()
+    convert.convert_single_image(png_path,model,output_folder, style=style)
     print("Converted sucessfully")
 
 if __name__ == "__main__":

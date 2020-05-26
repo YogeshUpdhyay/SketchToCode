@@ -4,7 +4,7 @@ import json
 from .Node import *
 
 BASE_DIR_NAME = os.path.dirname(__file__)
-DEFAULT_DSL_MAPPING_FILEPATH = "airbnb_dsl_mapping.json"
+DEFAULT_DSL_MAPPING_FILEPATH = "{}/styles/airbnb_dsl_mapping.json".format(BASE_DIR_NAME)
 FACEBOOK_DSL_MAPPING_FILEPATH = "{}/styles/facebook_dsl_mapping.json".format(BASE_DIR_NAME)
 AIRBNB_DSL_MAPPING_FILEPATH = "{}/styles/airbnb_dsl_mapping.json".format(BASE_DIR_NAME)
 

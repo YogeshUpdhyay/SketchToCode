@@ -1,4 +1,4 @@
-from SamplerUtils import *
+from .SamplerUtils import *
 
 TEXT_PLACE_HOLDER = "[]"
 

@@ -1,7 +1,7 @@
 from keras.engine.saving import model_from_json
 from keras.optimizers import RMSprop
 
-class load_pretrainedd_model():
+class load_pretrained_model():
 
     def load_model(self, model_json_file, model_weights_file):
         json_file = open(model_json_file, 'r')

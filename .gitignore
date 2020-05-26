@@ -6,3 +6,5 @@ src/__pycache__/
 src/dataset/__pycache__/
 src/model/__pycache__/
 model_output/
+output_folder/
+src/inference/__pycache__/
