@@ -14,6 +14,9 @@ def build_parser():
   parser.add_argument('--output_folder', type=str,
                       dest='output_folder', help='dir to save generated gui and html',
                       required=True)
+  parser.add_argument('--vocab_path', type=str,
+                        dest='vocab_path', help='directory containing vocabulary',
+                        required=True)
   parser.add_argument('--model_json_file', type=str,
                       dest='model_json_file', help='trained model json file',
                       required=True)
@@ -30,6 +33,7 @@ def main():
     output_folder = options.output_folder
     model_json_file = options.model_json_file
     model_weights_file = options.model_weights_file
+    vocab_path = options.vocab_path
     style = options.style
 
     if not os.path.exists(output_folder):
@@ -38,7 +42,7 @@ def main():
     load_model = load_pretrained_model()
     model = load_model.load_model(model_json_file, model_weights_file)
 
-    convert = convertor()
+    convert = convertor(vocab_path)
     convert.convert_single_image(png_path,model,output_folder, style=style)
     print("Converted sucessfully")
 

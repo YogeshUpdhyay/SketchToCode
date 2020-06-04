@@ -13,16 +13,17 @@ from ..dataset.datagenerator import *
 from .Compiler import *
 
 
-VOCAB_PATH = "../vocabulary.voacb"
+#VOCAB_PATH = "../vocabulary.voacb"
 
 class convertor:
 
-    def __init__(self):
+    def __init__(self,vocab_path):
+        self.vocab_path = vocab_path
         pass
 
 
     def load_vocab(self):
-        file = open(VOCAB_PATH,'r')
+        file = open(self.vocab_path,'r')
         text = file.read().splitlines()[0]
         file.close()
         tokenizer = Tokenizer(filters='', split=" ", lower=False)

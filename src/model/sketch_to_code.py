@@ -17,7 +17,7 @@ class sketch_to_code():
         self.model_output_path = model_output_path
         self.data_input_path = data_input_path
         self.vocab_path = vocab_path
-        pass 
+         
 
     def create_model(self):
 
