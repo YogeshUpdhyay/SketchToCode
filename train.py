@@ -4,6 +4,7 @@ import os
 from argparse import ArgumentParser
 VAL_SPLIT = 0.2
 MAX_SEQ = 150
+EPOCHS = 1
 
 def build_parser():
     parser = ArgumentParser()
@@ -18,7 +19,7 @@ def build_parser():
                         default=VAL_SPLIT)
     parser.add_argument('--epochs', type=int,
                         dest='epochs', help='number of epochs to train on',
-                        required=True)
+                        default=EPOCHS)
     parser.add_argument('--model_output_path', type=str,
                         dest='model_output_path', help='directory for saving model data',
                         required=True)
@@ -50,3 +51,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

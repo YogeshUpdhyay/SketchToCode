@@ -4,7 +4,7 @@
 
 *Generating HTML Code from a hand-drawn wireframe*
 
-![Preview](https://github.com/ashnkumar/sketch-code/blob/master/header_image.png)
+![Preview](https://github.com/YogeshUpdhyay/SketchToCode/blob/master/header_image.png)
 
 SketchCode is a deep learning model that takes hand-drawn web mockups and converts them into working HTML code. It uses an [image captioning](https://towardsdatascience.com/image-captioning-in-deep-learning-9cd23fb4d8d2) architecture to generate its HTML markup from hand-drawn website wireframes.
 
@@ -34,20 +34,12 @@ Unzip the data and use it for the training of the model.
 
 Train the model:
 ```sh
-python train.py --data_input_path {path/to/folder/with/pngs/guis} \
-      --vocab_path {path/to/vocabulary.vocab} \
-      --validation_split 0.2 \
-      --epochs 10 \
-      --model_output_path {path/to/output/model} 
+python train.py --data_input_path 'path/to/all_data/' --validation_split 'validation_split default is 0.2' --vocab_path 'path/to/vocabulary.vocab' --epochs "no of epochs default is 1" --model_output_path "path/to/save/weights and model"
 ```
 
 
 Converting an example drawn image into HTML code, using pretrained weights:
 ```sh
-python convert_single_image.py --png_path {path/to/img.png} \
-      --output_folder {folder/to/output/html} \
-      --model_json_file {path/to/model/json_file.json} \
-      --model_weights_file {path/to/model/weights.h5} \
-      --vocab_path {path/to/vocabulary.vocab}
+python convert_single_image.py --png_path 'path/to/pngfile' --output_folder 'path/to/output_folder' --model_json_file 'path/to/model_json.json' --model_weights_file 'path/to/pretrained_weights' --vocab_path 'path/to/vocabulary.vocab'
 ```
 
